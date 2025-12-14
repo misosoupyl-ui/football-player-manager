@@ -7,74 +7,58 @@ namespace SportsWorldAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AthleteController(SportsWorldContext _sportsWorldContext) : ControllerBase
+public class AthleteController : ControllerBase
 {
+    private readonly SportsWorldContext _sportsWorldContext;
 
+    public AthleteController(SportsWorldContext sportsWorldContext)
+    {
+        _sportsWorldContext = sportsWorldContext;
+    }
 
-// ===GET / athlete, henter athletes fra db test github===
-
- [HttpGet] 
- public async Task<ActionResult<List<Athlete>>>  Get()
+    // === GET /athlete ===
+    [HttpGet]
+    public async Task<ActionResult<List<Athlete>>> Get()
     {
         try
         {
-            // Henter alle rader fra Athletes-tabellen som en liste
-        List<Athlete> athletes = await _sportsWorldContext.Athletes.ToListAsync();
-
-        // Ok = 200-melding med data i responsen
-        return Ok (athletes);
-         }
-         catch
+            List<Athlete> athletes = await _sportsWorldContext.Athletes.ToListAsync();
+            return Ok(athletes);
+        }
+        catch
         {
-            // 500 = serverfeil. Teksten er kun for debugging
-            return StatusCode (500, "Server side error when getting athletes");
+            return StatusCode(500);
         }
     }
 
-
-    // ===GET / athlete / {id}===
-    // Henter en athlete basert på id
-
+    // === GET /athlete/{id} ===
     [HttpGet("{id}")]
     public async Task<ActionResult<Athlete>> Get(int id)
     {
         try
         {
-            // FindAsync søker etter en rad med riktig id (primærnøkkel)
-            Athlete? athlete = await _sportsWorldContext.Athletes
-            .FindAsync(id);
-            if (athlete != null)
-            {
-                // Fant athleten og returnerer 200 med objekt
-                return Ok(athlete); // 200
-            }
-            else
-            {
-                // Fant ikke, returnerer 404
-                return NotFound(); // 404
-            }
+            Athlete? athlete = await _sportsWorldContext.Athletes.FindAsync(id);
+
+            if (athlete == null)
+                return NotFound();
+
+            return Ok(athlete);
         }
         catch
         {
-            // Noe gikk galt på serveren
             return StatusCode(500);
         }
     }
 
-
-    // ===POST / athlete===
-    // Oppretter en ny athlete i db
-
+    // === POST /athlete ===
     [HttpPost]
     public async Task<ActionResult<Athlete>> Post(Athlete newAthlete)
     {
         try
         {
-            // Legger til objektet i "endringslisten" til context
             _sportsWorldContext.Athletes.Add(newAthlete);
-            // Lagrer endringene til db (INSERT)
             await _sportsWorldContext.SaveChangesAsync();
-            return CreatedAtAction("Get", new { id = newAthlete.Id}, newAthlete); // 201
+            return CreatedAtAction(nameof(Get), new { id = newAthlete.Id }, newAthlete);
         }
         catch
         {
@@ -82,62 +66,42 @@ public class AthleteController(SportsWorldContext _sportsWorldContext) : Control
         }
     }
 
-
-
-    // ===PUT / athlete
-    // Oppdaterer en eksisterende athlete
-    // (forventer at editedAthlete har en gyrldig id)
-
-    [HttpPut]
-    public async Task<IActionResult> Put(Athlete editedAthlete) // metoden tar imot et athleteobjekt
+// === PUT /athlete ===
+// Holder Finance og Athlete synk nÃ¥r purchaseStatus endres
+[HttpPut]
+public async Task<IActionResult> Put(Athlete editedAthlete)
+{
+    try
     {
-        try
-        {
-             // Context gjøres klar for å gjøre endring på redigert athlete; 
-             // Context greier å finne den igjen basert på id'en til athleten.
-            _sportsWorldContext.Athletes.Entry(editedAthlete).State = EntityState.Modified;
-            //Utfører lagringen (UPDATE)
-            await _sportsWorldContext.SaveChangesAsync();
-            return Ok(editedAthlete); // returnerer 200 ok med oppdatert objekt. 
-        }
-        catch
-        {
-            return StatusCode(500);
-        }
+        _sportsWorldContext.Athletes.Entry(editedAthlete).State = EntityState.Modified;
+        await _sportsWorldContext.SaveChangesAsync();
+        return NoContent();
     }
+    catch
+    {
+        return StatusCode(500);
+    }
+}
 
-
-
-   // ===DELETE / athlete / {id}===
-   // Sletter en athlete basert på id
-
+    // === DELETE /athlete/{id} ===
     [HttpDelete("{id}")]
-    public async Task <IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            // Prøver finne athleten som skal slettes
             Athlete? athlete = await _sportsWorldContext.Athletes.FindAsync(id);
 
-            if (athlete != null)
-            {
-                // Fjerner objektet fra context
-                _sportsWorldContext.Athletes.Remove(athlete);
-                // Lagrer endringene (DELETE)
-                await _sportsWorldContext.SaveChangesAsync();
-                // 204 = slettet ok
-                return NoContent();
-            }
-            else
-            {
-                // Ingen athlete med den id-en
-                return NotFound(); // 404
-            }
+            if (athlete == null)
+                return NotFound();
+
+            _sportsWorldContext.Athletes.Remove(athlete);
+            await _sportsWorldContext.SaveChangesAsync();
+
+            return NoContent();
         }
         catch
         {
-            return StatusCode(500); // server error
+            return StatusCode(500);
         }
     }
-
 }

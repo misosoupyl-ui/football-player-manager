@@ -8,8 +8,8 @@ const AppRouting = () => {
     <>
       <BrowserRouter>
         {/*https://tailscan.com/tailwind/backgrounds/to-slate-800*/}
-        <header className="!bg-slate-900 p-6 shadow-xl/30 backdrop-blur-md flex justify-between items-center bg-linear-to-b to-slate-900 from-blue-900/50  ">
-          <div className="font-bold text-3xl italic text-yellow-500">
+        <header className="!bg-slate-700 p-6 shadow-xl/30 !backdrop-blur-xl flex justify-between items-center bg-linear-to-b to-slate-900 from-blue-900/50  ">
+          <div className="font-bold text-3xl italic text-indigo-500">
             SportsWorld
           </div>
           <nav className="">

@@ -18,7 +18,7 @@ const AthleteItem = ({
   return (
     <div className="">
       {/*Boks som viser informasjon om athlete*/}
-      <article className="col-span-3 border-4 border-violet-300 border-y-violet-500 shadow-xl/30 bg-slate-900 p-4 drop-shadow-xl/50 hover:scale-105 hover:shadow-2xl transition-transform duration-500">
+      <article className="col-span-3 border-4 border-violet-300 border-y-violet-500 shadow-xl/30 backdrop-blur-lg p-4 drop-shadow-xl/50 hover:scale-105 hover:shadow-2xl transition-transform duration-500  inset-0 bg-black/60">
         {/*Navn og ID*/}
         <h3 className="text-center font-semibold text-size-lg">
           {athlete.name} (Id: {athlete.id})
@@ -33,16 +33,18 @@ const AthleteItem = ({
         />
 
         {/*Kjønn*/}
-        <p className="text-start text-white">Gender: {athlete.gender}</p>
+        <p className="text-start text-xl text-white mt-2">
+          Gender: {athlete.gender}
+        </p>
 
         {/*Pris*/}
-        <p className="text-start text-white">
+        <p className="text-start text-xl text-white">
           {/* Kode inspo: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing*/}
           Price: {(athlete.price ?? 0).toLocaleString() ?? "Unknown"}
         </p>
 
         {/*Kjøpsstatus*/}
-        <p className="text-center text-white">
+        <p className="text-start text-xl font-semibold text-white">
           Status: {athlete.purchaseStatus ? "Purchased" : "Not Purchased"}
         </p>
 
@@ -53,7 +55,7 @@ const AthleteItem = ({
               <button
                 // Kaller onUpdate dersom hvis funksjonen finnes
                 onClick={() => onUpdate?.(athlete)}
-                className="px-3 py-1 !bg-green-600 text-white rounded hover:bg-blue-500"
+                className="px-3 py-1 !bg-green-600 text-white rounded hover:bg-blue-500 relative right-18 top-11"
               >
                 <CiEdit />
               </button>

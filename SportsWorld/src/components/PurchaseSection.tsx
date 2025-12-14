@@ -16,7 +16,9 @@ const PurchaseSection = ({
 
   const fetchNotPurchasedAthletes = async () => {
     const all = await AthleteService.getAllAthletes();
-    const notPurchased = all.filter((a) => !a.purchaseStatus);
+    const notPurchased = all.filter(
+      (a) => (a.purchaseStatus ?? false) === false
+    );
     setAthletes(notPurchased);
   };
 
@@ -27,27 +29,25 @@ const PurchaseSection = ({
   const handlePurchase = async (athlete: IAthlete) => {
     setStatusMessage("");
 
-    // Validering: mÃ¥ ha id og price
     if (athlete.id === undefined) {
       setStatusMessage("Athlete id is missing.");
       return;
     }
-    if (athlete.price === undefined || athlete.price <= 0) {
+
+    const price = athlete.price ?? 0;
+    if (price <= 0) {
       setStatusMessage("Athlete price is missing/invalid.");
       return;
     }
 
-    // Sjekk at dere har nok penger
-    if (finance.moneyLeft < athlete.price) {
+    if (finance.moneyLeft < price) {
       setStatusMessage("Not enough money to purchase this athlete.");
       return;
     }
 
     // 1) Oppdater athlete: purchaseStatus = true
-    const updatedAthlete: IAthlete = {
-      ...athlete,
-      purchaseStatus: true,
-    };
+    // Backend PUT /athlete oppdaterer ogsÃ¥ Finance
+    const updatedAthlete: IAthlete = { ...athlete, purchaseStatus: true };
 
     const athleteResult = await AthleteService.putAthletes(updatedAthlete);
     if (!athleteResult) {
@@ -55,25 +55,18 @@ const PurchaseSection = ({
       return;
     }
 
-    // 2) Oppdater finance
-    const updatedFinance: IFinance = {
-      ...finance,
-      moneyLeft: finance.moneyLeft - athlete.price,
-      moneySpent: finance.moneySpent + athlete.price,
-      numberOfPurchases: finance.numberOfPurchases + 1,
-    };
-
-    const financeResult = await FinanceService.putFinance(updatedFinance);
-    if (!financeResult) {
-      setStatusMessage("Could not update finance.");
+    // 2) Hent fersk finance fra backend (source of truth)
+    const latestFinance = await FinanceService.getFinance();
+    if (!latestFinance) {
+      setStatusMessage("Purchased athlete, but could not refresh finance.");
       return;
     }
 
     // 3) Oppdater UI
-    onFinanceUpdated(updatedFinance);
+    onFinanceUpdated(latestFinance);
     setAthletes((prev) => prev.filter((a) => a.id !== athlete.id));
-    setStatusMessage(`${athlete.name} purchased successfully!`);
 
+    setStatusMessage(`${athlete.name} purchased successfully!`);
     setTimeout(() => setStatusMessage(""), 3000);
   };
 
@@ -109,9 +102,7 @@ const PurchaseSection = ({
               <p className="text-start text-white">
                 Price: {(athlete.price ?? 0).toLocaleString()}
               </p>
-              <p className="text-start text-white">
-                Status: {athlete.purchaseStatus ? "Purchased" : "Not Purchased"}
-              </p>
+              <p className="text-start text-white">Status: Not Purchased</p>
 
               <div className="flex justify-end mt-3">
                 <button

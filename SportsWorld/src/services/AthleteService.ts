@@ -36,15 +36,13 @@ const postAthletes = async (newAthlete: IAthlete): Promise<IAthlete | null> => {
   }
 };
 
-const putAthletes = async (
-  editedAthlete: IAthlete
-): Promise<IAthlete | null> => {
+const putAthletes = async (editedAthlete: IAthlete): Promise<boolean> => {
   try {
-    const response = await axios.put<IAthlete>(athleteEndpoint, editedAthlete);
-    return response.data;
+    await axios.put(athleteEndpoint, editedAthlete);
+    return true;
   } catch (error) {
     console.error("Error:", error);
-    return null;
+    return false;
   }
 };
 

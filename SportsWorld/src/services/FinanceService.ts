@@ -41,8 +41,8 @@ const putFinance = async (
   updatedFinance: IFinance
 ): Promise<IFinance | null> => {
   try {
-    await axios.put(financeEndpoint, updatedFinance);
-    return updatedFinance;
+    const response = await axios.put<IFinance>(financeEndpoint, updatedFinance);
+    return response.data; // <-- kommer fra backend
   } catch (error) {
     console.error("Error updating finance:", error);
     return null;

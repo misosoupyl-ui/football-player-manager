@@ -1,20 +1,18 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import type { IAthlete } from "../interfaces/IAthlete";
 import AthleteService from "../services/AthleteService";
 import AthleteItem from "./AthleteItem";
 import AthleteEdit from "./AthleteEdit";
-import AthleteDelete from "./AthleteDelete";
 import SearchBar from "./SearchBar";
 
 const AthleteList = () => {
-  // State for å lagre listen av athletes
-  // DENNE MÅ FORKLARES BEDRE!!!!!!
+  // Source of truth for athletes i admin-siden
   const [athletes, setAthletes] = useState<IAthlete[]>([]);
   const [selectedAthlete, setSelectedAthlete] = useState<IAthlete | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
 
-  const handleSelectedAthlete = (athletes: IAthlete) => {
-    setSelectedAthlete(athletes);
+  const handleSelectedAthlete = (athlete: IAthlete) => {
+    setSelectedAthlete(athlete);
   };
 
   const getAthletes = async () => {
@@ -22,65 +20,58 @@ const AthleteList = () => {
       const data = await AthleteService.getAllAthletes();
       setAthletes(data);
     } catch (error) {
-      console.error("Respons feil", error);
+      console.error("Error fetching athletes:", error);
     }
   };
 
   return (
     <>
-      {/*Oversrkift*/}
+      {/* Overskrift */}
       <header className="mb-2">
         <h3 className="text-xl">Athletes</h3>
       </header>
 
-      {/*Search bar*/}
+      {/* Search bar */}
       <section className="mb-4">
-        <SearchBar></SearchBar>
+        <SearchBar />
       </section>
 
-      {/**/}
+      {/* Edit athlete (kun navn / pris / bilde / gender – IKKE purchase) */}
       {selectedAthlete && (
         <AthleteEdit
           athlete={selectedAthlete}
           onSave={(updatedAthlete: IAthlete) => {
-            //oppdaterer listen med redigert athlete
-            setAthletes((prevstate) =>
-              prevstate.map((a) =>
-                a.id === updatedAthlete.id ? updatedAthlete : a
-              )
+            // Oppdater kun athlete-listen (ingen finance!)
+            setAthletes((prev) =>
+              prev.map((a) => (a.id === updatedAthlete.id ? updatedAthlete : a))
             );
+
             setSelectedAthlete(null);
-            setStatusMessage("Athlete update succsessful");
+            setStatusMessage("Athlete updated successfully");
+            setTimeout(() => setStatusMessage(""), 3000);
           }}
         />
       )}
 
-      {/*Knappen for å hente athletes*/}
+      {/* Hent athletes */}
       <section className="mb-2">
-        <button
-          onClick={getAthletes}
-          /*Denne kan endres på*/
-          className="!bg-purple-900/50 border mt-6"
-        >
+        <button onClick={getAthletes} className="!bg-purple-900/50 border mt-6">
           Show all athletes
         </button>
       </section>
 
-      {/*Melding som sier at det gikk bra å oppdatere*/}
-      {statusMessage && <p className="text-green-600">{statusMessage} </p>}
+      {/* Statusmelding */}
+      {statusMessage && <p className="text-green-600">{statusMessage}</p>}
 
-      {/*Grid som viser alle athlete komponenter. 
-      https://v1.scrimba.com/articles/react-list-array-with-map-function/*/}
+      {/* Athlete grid */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-        {athletes.map((athlete, index) => (
+        {athletes.map((athlete) => (
           <AthleteItem
             key={athlete.id}
             athlete={athlete}
             onUpdate={handleSelectedAthlete}
             onDelete={(id: number) =>
-              setAthletes((prevstate) =>
-                prevstate.filter((athlete) => athlete.id !== id)
-              )
+              setAthletes((prev) => prev.filter((a) => a.id !== id))
             }
           />
         ))}
