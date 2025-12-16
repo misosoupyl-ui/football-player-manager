@@ -22,7 +22,7 @@ public class AthleteController : ControllerBase
     {
         try
         {
-            List<Athlete> athletes = await _sportsWorldContext.Athletes.ToListAsync();
+            var athletes = await _sportsWorldContext.Athletes.ToListAsync();
             return Ok(athletes);
         }
         catch
@@ -37,11 +37,8 @@ public class AthleteController : ControllerBase
     {
         try
         {
-            Athlete? athlete = await _sportsWorldContext.Athletes.FindAsync(id);
-
-            if (athlete == null)
-                return NotFound();
-
+            var athlete = await _sportsWorldContext.Athletes.FindAsync(id);
+            if (athlete == null) return NotFound();
             return Ok(athlete);
         }
         catch
@@ -66,22 +63,21 @@ public class AthleteController : ControllerBase
         }
     }
 
-// === PUT /athlete ===
-// Holder Finance og Athlete synk nÃ¥r purchaseStatus endres
-[HttpPut]
-public async Task<IActionResult> Put(Athlete editedAthlete)
-{
-    try
+    // === PUT /athlete ===
+    [HttpPut]
+    public async Task<IActionResult> Put(Athlete editedAthlete)
     {
-        _sportsWorldContext.Athletes.Entry(editedAthlete).State = EntityState.Modified;
-        await _sportsWorldContext.SaveChangesAsync();
-        return NoContent();
+        try
+        {
+            _sportsWorldContext.Athletes.Entry(editedAthlete).State = EntityState.Modified;
+            await _sportsWorldContext.SaveChangesAsync();
+            return NoContent(); // 204
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
     }
-    catch
-    {
-        return StatusCode(500);
-    }
-}
 
     // === DELETE /athlete/{id} ===
     [HttpDelete("{id}")]
@@ -89,14 +85,11 @@ public async Task<IActionResult> Put(Athlete editedAthlete)
     {
         try
         {
-            Athlete? athlete = await _sportsWorldContext.Athletes.FindAsync(id);
-
-            if (athlete == null)
-                return NotFound();
+            var athlete = await _sportsWorldContext.Athletes.FindAsync(id);
+            if (athlete == null) return NotFound();
 
             _sportsWorldContext.Athletes.Remove(athlete);
             await _sportsWorldContext.SaveChangesAsync();
-
             return NoContent();
         }
         catch

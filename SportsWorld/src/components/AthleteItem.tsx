@@ -1,6 +1,5 @@
 import type { IAthlete } from "../interfaces/IAthlete";
 import AthleteDelete from "./AthleteDelete";
-import { CiEdit } from "react-icons/ci";
 
 // Komponent som tar inn et athlete objekt.
 // Kan vise handlinger som update & delete, dersom showActions er satt til true(pga at disse knappene ikke alltid skal vises)
@@ -18,54 +17,56 @@ const AthleteItem = ({
   return (
     <div className="">
       {/*Boks som viser informasjon om athlete*/}
-      <article className="col-span-3 border-4 border-violet-300 border-y-violet-500 shadow-xl/30 backdrop-blur-lg p-4 drop-shadow-xl/50 hover:scale-105 hover:shadow-2xl transition-transform duration-500  inset-0 bg-black/60">
-        {/*Navn og ID*/}
-        <h3 className="text-center font-semibold text-size-lg">
-          {athlete.name} (Id: {athlete.id})
-        </h3>
+      <article className="col-span-3 border border-gray-300 shadow-lg backdrop-blur-lg p-4 drop-shadow hover:scale-105 hover:shadow-xl transition-transform duration-500 inset-0 bg-black/60 overflow-hidden">
+
+        {/*Headerbar (lysere enn bakgrunn)*/}
+        <div className="-mx-4 -mt-4 h-14 bg-white/10 border-b border-gray-300/20 flex items-center justify-center">
+          <h3 className="text-sm font-semibold text-white tracking-wide">
+            {athlete.name} <span className="text-gray-300">(Id: {athlete.id})</span>
+          </h3>
+        </div>
 
         {/*Bilde*/}
         <img
-          className="rounded-full w-40 h-40 object-cover border-2 border-black"
+          className="mx-auto mt-6 rounded-full w-28 h-28 object-cover border-4 border-black bg-black"
           //Web apiets sin images mappe:
           src={`http://localhost:5105/images/${athlete.image}`}
           alt={`This is a image of ${athlete.name}`}
         />
 
         {/*Kjønn*/}
-        <p className="text-start text-xl text-white mt-2">
-          Gender: {athlete.gender}
+        <p className="text-sm text-gray-200 mt-4">
+          <span className="text-gray-400">Gender:</span> {athlete.gender}
         </p>
 
         {/*Pris*/}
-        <p className="text-start text-xl text-white">
-          {/* Kode inspo: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing*/}
-          Price: {(athlete.price ?? 0).toLocaleString() ?? "Unknown"}
+        <p className="text-sm text-gray-200">
+          <span className="text-gray-400">Price:</span>{" "}
+          {(athlete.price ?? 0).toLocaleString() ?? "Unknown"}
         </p>
 
         {/*Kjøpsstatus*/}
-        <p className="text-start text-xl font-semibold text-white">
-          Status: {athlete.purchaseStatus ? "Purchased" : "Not Purchased"}
+        <p className="text-sm font-medium text-white mt-1">
+          <span className="text-gray-400 font-normal">Status:</span>{" "}
+          {athlete.purchaseStatus ? "Purchased" : "Not Purchased"}
         </p>
 
         {/*Actions (Update + Delete)*/}
         {showActions && (
-          <>
-            <div className="flex justify-end gap-4 mt-2 ">
-              <button
-                // Kaller onUpdate dersom hvis funksjonen finnes
-                onClick={() => onUpdate?.(athlete)}
-                className="px-3 py-1 !bg-green-600 text-white rounded hover:bg-blue-500 relative right-18 top-11"
-              >
-                <CiEdit />
-              </button>
-            </div>
+          <div className="flex justify-end gap-4 mt-6 w-full">
+            <button
+              // Kaller onUpdate dersom hvis funksjonen finnes
+              onClick={() => onUpdate?.(athlete)}
+              className="w-40 px-4 py-2 !bg-blue-900/50 !text-white border border-blue-700 !rounded-none hover:!bg-blue-800 transition shadow-sm text-center"
+            >
+              Edit
+            </button>
 
             {/*Viser slett knappen kun hvis athlete eksiterer og ondelete er definert*/}
             {athlete.id !== undefined && onDelete && (
               <AthleteDelete athlete={athlete} onDelete={onDelete} />
             )}
-          </>
+          </div>
         )}
       </article>
     </div>

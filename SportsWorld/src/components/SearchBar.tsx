@@ -28,7 +28,7 @@ const SearchBar = () => {
       if (athlete) {
         // Hvis athlete er funnet oppdaterer resultatet og ny statusmelding
         setFoundAthlete(athlete);
-        setStatusMessage(`Found Athlete Id: ! ${athlete.id}`);
+        setStatusMessage(`Found Athlete Id:  ${athlete.id}`);
       } else {
         // Hvis ikke, nullstill resultat og vis error statusmelding
         setFoundAthlete(null);
@@ -45,20 +45,20 @@ const SearchBar = () => {
     <section>
       <div className=" max-w-md mx-aut shadow-xl/30 p-4">
         <input
-          className="border-2 border-white px-2 h-11"
+          className="border border-white px-2 h-11"
           type="text"
           value={searchId}
           onChange={(event) => setSearchId(event.target.value)}
           placeholder="Search athlete by Id.."
         />
-        <button className="!bg-slate-700 m-5" onClick={filterSearch}>
+        <button className="!bg-slate-700 m-4" onClick={filterSearch}>
           <MdPersonSearch />
         </button>
 
         {statusMessage}
 
         {foundAthlete && (
-          <div className="col-span-3 border-4 border-violet-300 border-y-violet-500 shadow-xl/30 p-4 ">
+          <div className="col-span-3 border border-gray-300 shadow-lg backdrop-blur-lg p-4 drop-shadow hover:scale-105 hover:shadow-xl transition-transform duration-500 inset-0 bg-black/60">
             <h3 className="text-center font-semibold">
               {foundAthlete.name} (id:{foundAthlete.id})
             </h3>

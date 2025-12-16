@@ -25,10 +25,13 @@ const AthleteList = () => {
   };
 
   return (
-    <>
+      <>
       {/* Overskrift */}
-      <header className="mb-2">
-        <h3 className="text-xl">Athletes</h3>
+      <header className="mb-4">
+        <h3 className="text-2xl font-semibold text-white">Athletes</h3>
+        <p className="text-sm text-gray-400 ">
+          Manage athletes, pricing and availability
+        </p>
       </header>
 
       {/* Search bar */}
@@ -55,7 +58,7 @@ const AthleteList = () => {
 
       {/* Hent athletes */}
       <section className="mb-2">
-        <button onClick={getAthletes} className="!bg-purple-900/50 border mt-6">
+        <button onClick={getAthletes} className="!bg-blue-900/50 border mt-6">
           Show all athletes
         </button>
       </section>

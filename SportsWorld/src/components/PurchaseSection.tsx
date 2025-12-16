@@ -5,117 +5,140 @@ import type { IAthlete } from "../interfaces/IAthlete";
 import type { IFinance } from "../interfaces/IFinance";
 
 const PurchaseSection = ({
-  finance,
   onFinanceUpdated,
 }: {
-  finance: IFinance;
   onFinanceUpdated: (finance: IFinance) => void;
 }) => {
-  const [athletes, setAthletes] = useState<IAthlete[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [notPurchased, setNotPurchased] = useState<IAthlete[]>([]);
+  const [purchased, setPurchased] = useState<IAthlete[]>([]);
+  const [statusMessage, setStatusMessage] = useState("");
 
-  const fetchNotPurchasedAthletes = async () => {
+  const fetchAthletes = async () => {
     const all = await AthleteService.getAllAthletes();
-    const notPurchased = all.filter(
-      (a) => (a.purchaseStatus ?? false) === false
-    );
-    setAthletes(notPurchased);
+    setNotPurchased(all.filter((a) => !a.purchaseStatus));
+    setPurchased(all.filter((a) => a.purchaseStatus));
+  };
+
+  const refreshFinance = async () => {
+    const latest = await FinanceService.getFinance();
+    if (latest) onFinanceUpdated(latest);
   };
 
   useEffect(() => {
-    fetchNotPurchasedAthletes();
+    fetchAthletes();
   }, []);
 
-  const handlePurchase = async (athlete: IAthlete) => {
-    setStatusMessage("");
-
+  const setPurchaseStatus = async (athlete: IAthlete, newStatus: boolean) => {
     if (athlete.id === undefined) {
       setStatusMessage("Athlete id is missing.");
       return;
     }
 
-    const price = athlete.price ?? 0;
-    if (price <= 0) {
-      setStatusMessage("Athlete price is missing/invalid.");
+    const updatedAthlete: IAthlete = { ...athlete, purchaseStatus: newStatus };
+    const result = await AthleteService.putAthletes(updatedAthlete);
+
+    if (!result) {
+      setStatusMessage("Could not update athlete.");
       return;
     }
 
-    if (finance.moneyLeft < price) {
-      setStatusMessage("Not enough money to purchase this athlete.");
-      return;
+    await refreshFinance();
+    await fetchAthletes();
+
+    setStatusMessage(
+      newStatus
+        ? `${athlete.name} purchased!`
+        : `${athlete.name} set to NOT purchased (refund).`
+    );
+
+    window.setTimeout(() => setStatusMessage(""), 3000);
+  };
+
+  const renderCards = (
+    list: IAthlete[],
+    statusText: string,
+    buttonText: string,
+    buttonClassName: string,
+    newStatus: boolean
+  ) => {
+    if (list.length === 0) {
+      return (
+        <p className="text-sm text-white/70 mb-8">
+          {newStatus ? "No athletes to purchase." : "No purchased athletes."}
+        </p>
+      );
     }
 
-    // 1) Oppdater athlete: purchaseStatus = true
-    // Backend PUT /athlete oppdaterer ogsÃ¥ Finance
-    const updatedAthlete: IAthlete = { ...athlete, purchaseStatus: true };
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        {list.map((a) => (
+          <article
+            key={a.id}
+            className="border border-gray-300 shadow-lg backdrop-blur-lg p-4 drop-shadow hover:scale-105 hover:shadow-xl transition-transform duration-500 bg-black/60 overflow-hidden"
+          >
+            <div className="-mx-4 -mt-4 h-14 bg-white/10 border-b border-gray-300/20 flex items-center justify-center">
+              <h4 className="text-sm font-semibold text-white tracking-wide">
+                {a.name} <span className="text-gray-300">(Id: {a.id})</span>
+              </h4>
+            </div>
 
-    const athleteResult = await AthleteService.putAthletes(updatedAthlete);
-    if (!athleteResult) {
-      setStatusMessage("Could not update athlete purchase status.");
-      return;
-    }
+            <img
+              className="mx-auto mt-6 rounded-full w-28 h-28 object-cover border-4 border-black bg-black"
+              src={`http://localhost:5105/images/${a.image}`}
+              alt={`Image of ${a.name}`}
+            />
 
-    // 2) Hent fersk finance fra backend (source of truth)
-    const latestFinance = await FinanceService.getFinance();
-    if (!latestFinance) {
-      setStatusMessage("Purchased athlete, but could not refresh finance.");
-      return;
-    }
+            <p className="text-sm text-gray-200 mt-4">
+              <span className="text-gray-400">Gender:</span> {a.gender}
+            </p>
 
-    // 3) Oppdater UI
-    onFinanceUpdated(latestFinance);
-    setAthletes((prev) => prev.filter((a) => a.id !== athlete.id));
+            <p className="text-sm text-gray-200">
+              <span className="text-gray-400">Price:</span>{" "}
+              {(a.price ?? 0).toLocaleString()}
+            </p>
 
-    setStatusMessage(`${athlete.name} purchased successfully!`);
-    setTimeout(() => setStatusMessage(""), 3000);
+            <p className="text-sm font-medium text-white mt-1">
+              <span className="text-gray-400 font-normal">Status:</span>{" "}
+              {statusText}
+            </p>
+
+            <div className="flex justify-end mt-6">
+              <button
+                type="button"
+                onClick={() => setPurchaseStatus(a, newStatus)}
+                className={buttonClassName}
+              >
+                {buttonText}
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    );
   };
 
   return (
     <section className="bg-slate-900/60 rounded-xl p-6 text-white">
-      <h2 className="text-2xl font-semibold mb-4">Purchase Athletes</h2>
-      <p className="text-sm text-white/80 mb-6">Athletes not purchased yet</p>
+      <h2 className="text-2xl font-semibold mb-2">Purchase / Manage Athletes</h2>
 
       {statusMessage && <p className="mb-4 text-sm">{statusMessage}</p>}
 
-      {athletes.length === 0 ? (
-        <p className="text-sm text-white/80">
-          No athletes available for purchase.
-        </p>
-      ) : (
-        <div className="grid grid-cols-4 gap-6">
-          {athletes.map((athlete) => (
-            <article
-              key={athlete.id}
-              className="border-4 border-violet-300 border-y-violet-500 shadow-xl/30 bg-slate-900 p-4 drop-shadow-xl/50"
-            >
-              <h3 className="text-center font-semibold">
-                {athlete.name} (id: {athlete.id})
-              </h3>
+      <h3 className="text-xl font-semibold mb-3">Not Purchased</h3>
+      {renderCards(
+        notPurchased,
+        "Not Purchased",
+        "Purchase",
+        "w-40 px-4 py-2 !bg-gray-300 text-black border border-gray-400 rounded-none hover:bg-gray-400 transition shadow-sm text-center",
+        true
+      )}
 
-              <img
-                className="rounded-full w-40 h-40 object-cover border-2 border-black mx-auto my-3"
-                src={`http://localhost:5105/images/${athlete.image}`}
-                alt={`This is a image of ${athlete.name}`}
-              />
-
-              <p className="text-start text-white">Gender: {athlete.gender}</p>
-              <p className="text-start text-white">
-                Price: {(athlete.price ?? 0).toLocaleString()}
-              </p>
-              <p className="text-start text-white">Status: Not Purchased</p>
-
-              <div className="flex justify-end mt-3">
-                <button
-                  type="button"
-                  onClick={() => handlePurchase(athlete)}
-                  className="px-3 py-1 bg-violet-500 text-white rounded hover:bg-violet-400"
-                >
-                  Purchase
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+      <h3 className="text-xl font-semibold mb-3">Purchased</h3>
+      {renderCards(
+        purchased,
+        "Purchased",
+        "Unpurchase",
+        "w-40 px-4 py-2 !bg-gray-500 text-black border border-blue-700 rounded-none hover:bg-blue-800 transition shadow-sm text-center",
+        false
       )}
     </section>
   );

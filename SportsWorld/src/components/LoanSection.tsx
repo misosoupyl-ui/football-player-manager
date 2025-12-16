@@ -55,14 +55,14 @@ const LoanSection = ({
   };
 
   return (
-    <section className="bg-slate-900/60 rounded-xl p-6 text-white">
+    <section className="bg-slate-900/60 p-6 text-white">
       <h2 className="text-2xl font-semibold mb-4">Get more money (Loan)</h2>
 
       <div className="flex flex-col gap-3 max-w-sm">
         <label className="text-sm">Loan amount</label>
 
         <input
-          className="border rounded px-3 py-2 text-black"
+          className="border rounded px-3 py-2 white"
           type="text"
           value={loanAmount}
           onChange={(e) => setLoanAmount(e.target.value)}
@@ -71,7 +71,7 @@ const LoanSection = ({
         <button
           type="button"
           onClick={addLoan}
-          className="px-4 py-2 rounded bg-white text-slate-900 hover:bg-slate-200"
+          className="px-4 py-2 rounded !bg-white/70 text-slate-900 hover:bg-slate-200"
         >
           Add loan
         </button>

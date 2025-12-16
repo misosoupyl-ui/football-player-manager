@@ -31,8 +31,7 @@ const DashboardPage = () => {
   }, []);
 
   return (
-    <section className="min-h-screen bg-slate-950 text-white p-6">
-      <h1 className="text-5xl font-bold mb-6">Dashboard</h1>
+    <section className="bg-slate-950 text-black">
 
       {loading && <p>Loading finance...</p>}
       {!loading && statusMessage && (
@@ -57,11 +56,8 @@ const DashboardPage = () => {
           {/* Section 3 */}
           <div className="mt-6">
             <PurchaseSection
-              finance={finance}
-              onFinanceUpdated={() => {
-                // Etter purchase: hent finance på nytt fra backend
-                fetchFinance();
-              }}
+              onFinanceUpdated={setFinance}
+              
             />
           </div>
         </>

@@ -23,13 +23,17 @@ const AthleteDelete = ({
   };
 
   return (
-    <div className="flex justify-end gap-4 mt-2 ">
+    <div className="w-40">
+
       <button
         onClick={() => deleteAthlete(athlete.id!)}
-        className="!bg-red-500"
+       className="w-full px-4 py-2 !bg-blue-900/50 !text-white border border-blue-700 !rounded-none hover:!bg-blue-800 transition shadow-sm"
+
+
       >
-        <FaTrashAlt />
+        Delete
       </button>
+
       {statusMessage && <p className="text-green-600">{statusMessage}</p>}
     </div>
   );

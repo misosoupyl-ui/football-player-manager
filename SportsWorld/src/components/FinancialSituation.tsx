@@ -2,28 +2,39 @@ import type { IFinance } from "../interfaces/IFinance";
 
 const FinancialSituation = ({ finance }: { finance: IFinance }) => {
   return (
-    <section className="p-4 bg-slate-800 rounded-xl text-white">
-      <h2 className="text-2xl font-semibold mb-4">Financial situation</h2>
+    <section className="p-4 bg-white/10 rounded-xl text-white">
+      <h2 className="text-xl font-medium mb-4">Financial situation</h2>
 
-      <div className="space-y-2">
-        <p>
-          Money left:{" "}
-          <span className="font-semibold">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Money left */}
+        <div className="border border-yellow-300/40 bg-black/30 p-4">
+          <p className="text-xs text-gray-400 uppercase tracking-wide">
+            Money left
+          </p>
+          <p className="text-xl font-semibold mt-1">
             {finance.moneyLeft.toLocaleString()}
-          </span>
-        </p>
+          </p>
+        </div>
 
-        <p>
-          Number of purchases:{" "}
-          <span className="font-semibold">{finance.numberOfPurchases}</span>
-        </p>
+        {/* Number of purchases */}
+        <div className="border border-yellow-300/40 bg-black/30 p-4">
+          <p className="text-xs text-gray-400 uppercase tracking-wide">
+            Purchases
+          </p>
+          <p className="text-xl font-semibold mt-1">
+            {finance.numberOfPurchases}
+          </p>
+        </div>
 
-        <p>
-          Money spent:{" "}
-          <span className="font-semibold">
+        {/* Money spent */}
+        <div className="border border-yellow-300/40 bg-black/30 p-4">
+          <p className="text-xs text-gray-400 uppercase tracking-wide">
+            Money spent
+          </p>
+          <p className="text-xl font-semibold mt-1">
             {finance.moneySpent.toLocaleString()}
-          </span>
-        </p>
+          </p>
+        </div>
       </div>
     </section>
   );

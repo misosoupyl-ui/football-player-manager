@@ -7,22 +7,65 @@ namespace SportsWorldAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class FinanceController(SportsWorldContext _sportsWorldContext) : ControllerBase
+public class FinanceController : ControllerBase
 {
+    private readonly SportsWorldContext _sportsWorldContext;
 
-  // ===GET / finance===
-  // Henter alle finance rader (bare en rad hos oss)
+    public FinanceController(SportsWorldContext sportsWorldContext)
+    {
+        _sportsWorldContext = sportsWorldContext;
+    }
 
+    // synkroniserer finance basert på athlete purchasestatus. 
+    // Athletes er "source of truth" for kjøp.
+    // Mens finance holder oversikt over budsjett/remaining
+    private async Task SyncFinanceFromAthletes(Finance finance)
+    {
+        // Hent alle purchased athletes
+        var purchasedAthletes = await _sportsWorldContext.Athletes
+            .Where(a => a.PurchaseStatus == true)
+            .ToListAsync();
 
- [HttpGet] 
- public async Task<ActionResult<List<Finance>>> Get()
+        // Regner antall kjøp og titalt brukt beløp
+        int purchasedCount = purchasedAthletes.Count;
+        decimal spent = purchasedAthletes.Sum(a => (decimal)a.Price);
+
+        // Totalbudsjett = penger igjen + penger brukt
+        decimal totalBudget = finance.MoneyLeft + finance.MoneySpent;
+
+        // Oppdaterer finance basert på nye beregninger
+        finance.NumberOfPurchases = purchasedCount;
+        finance.MoneySpent = spent;
+        finance.MoneyLeft = totalBudget - spent;
+
+        // ekstra sikkerhet, for at verdier ikke blir negative
+        if (finance.MoneyLeft < 0) finance.MoneyLeft = 0;
+        if (finance.MoneySpent < 0) finance.MoneySpent = 0;
+        if (finance.NumberOfPurchases < 0) finance.NumberOfPurchases = 0;
+    }
+
+    // === GET /finance ===
+    // Returnerer liste, men synker vi først
+    [HttpGet]
+    public async Task<ActionResult<List<Finance>>> Get()
     {
         try
         {
-            // Henter alle rader fra finance tabellen
             List<Finance> finances = await _sportsWorldContext.Finances.ToListAsync();
-            // 200
-            return Ok(finances);
+
+            // Hvis dere ikke har en finance-rad enda 
+            if (finances.Count == 0)
+                return Ok(finances);
+
+            // Dere har kun 1 rad - synk den
+            Finance finance = finances[0];
+            await SyncFinanceFromAthletes(finance);
+
+            _sportsWorldContext.Finances.Update(finance);
+            await _sportsWorldContext.SaveChangesAsync();
+
+            // returnerer samme format som før (liste)
+            return Ok(new List<Finance> { finance });
         }
         catch
         {
@@ -30,28 +73,23 @@ public class FinanceController(SportsWorldContext _sportsWorldContext) : Control
         }
     }
 
-
-// ===GET / finance / {id}
-// Henter finance rad basert på id
-
-[HttpGet("{id}")]
-public async Task<ActionResult<Finance>> Get(int id)
+    // === GET /finance/{id} ===
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Finance>> Get(int id)
     {
         try
         {
-            // Forsøker å finne finance raden med riktig id
             Finance? finance = await _sportsWorldContext.Finances.FindAsync(id);
 
-            if (finance != null)
-            {
-                // Fant, 200 ok med objektet
-                return Ok(finance);
-            }
-            else
-            {
-                // Fant ikke, 404 not founf
+            if (finance == null)
                 return NotFound();
-            }
+
+            await SyncFinanceFromAthletes(finance);
+
+            _sportsWorldContext.Finances.Update(finance);
+            await _sportsWorldContext.SaveChangesAsync();
+
+            return Ok(finance);
         }
         catch
         {
@@ -59,17 +97,12 @@ public async Task<ActionResult<Finance>> Get(int id)
         }
     }
 
-
-// ===POST / finance=== 
-// Oppretter en ny finance-rad
-// Trenger egentlig ikke i finance men vi må fortsatt vise at vi kan full crud
-
-[HttpPost]
-public async Task<ActionResult> Post(Finance newFinance)
+    // === POST /finance ===
+    [HttpPost]
+    public async Task<ActionResult> Post(Finance newFinance)
     {
         try
         {
-            // Legger til objektet i context
             _sportsWorldContext.Finances.Add(newFinance);
             await _sportsWorldContext.SaveChangesAsync();
             return Created();
@@ -80,51 +113,57 @@ public async Task<ActionResult> Post(Finance newFinance)
         }
     }
 
-
-// ===PUT / finance===
-// Oppdaterer, eks MoneyLeft, NumberOfPurchases og MoneySpent
-
+    // === PUT /finance ===
+// brukes for å justere lån (moneyleft)
+// numberofpruchase og moneyspent skal alltid komme fra athletes, og ikke overskrves fra frontend.
 [HttpPut]
 public async Task<IActionResult> Put(Finance editedFinance)
+{
+    try
     {
-        try
+        // forutsetter har bare 1 rad i Finance-tabellen
+        Finance? finance = await _sportsWorldContext.Finances.FirstOrDefaultAsync();
+
+        if (finance == null)
         {
-            _sportsWorldContext.Finances.Entry(editedFinance).State = EntityState.Modified;
-            await _sportsWorldContext.SaveChangesAsync();
-            return Ok(editedFinance);// returnerer 200 ok med oppdatert objekt
+            return NotFound();
         }
-        catch
-        {
-            return StatusCode(500);
-        }
+
+        // kun Moneyleft lar vi frontend endre
+        finance.MoneyLeft = editedFinance.MoneyLeft;
+
+        // Synk resten fra Athletes (source of truth)
+        await SyncFinanceFromAthletes(finance);
+
+        _sportsWorldContext.Finances.Update(finance);
+        await _sportsWorldContext.SaveChangesAsync();
+
+        return Ok(finance);
     }
+    catch
+    {
+        return StatusCode(500);
+    }
+}
 
-
-
-// ===DELETE / finance / {id}===
-
-[HttpDelete("{id}")]
-public async Task<IActionResult> Delete(int id)
+    // === DELETE /finance/{id} ===
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
             Finance? finance = await _sportsWorldContext.Finances.FindAsync(id);
 
-            if (finance != null)
-            {
-                _sportsWorldContext.Finances.Remove(finance);
-                await _sportsWorldContext.SaveChangesAsync();
-                return NoContent();
-            }
-            else
-            {
+            if (finance == null)
                 return NotFound();
-            }
+
+            _sportsWorldContext.Finances.Remove(finance);
+            await _sportsWorldContext.SaveChangesAsync();
+            return NoContent();
         }
         catch
         {
             return StatusCode(500);
         }
     }
-
 }

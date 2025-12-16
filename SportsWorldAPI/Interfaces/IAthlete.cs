@@ -10,6 +10,3 @@ interface IAthlete
     bool PurchaseStatus { get; set; }
 } 
 
-
-
-// dette er bare en test

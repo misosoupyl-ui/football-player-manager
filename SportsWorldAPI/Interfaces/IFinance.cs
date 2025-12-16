@@ -1,7 +1,5 @@
 namespace SportsWorldAPI.Interfaces;
 
-
-//Interface for Finance model
 interface IFinance
 {
     int Id {get; set;}

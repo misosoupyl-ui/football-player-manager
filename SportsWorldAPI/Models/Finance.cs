@@ -1,10 +1,8 @@
-//Implementasjon av Interface
 using SportsWorldAPI.Interfaces;
 
 namespace SportsWorldAPI.Models;
 
 
-// Klassen som implementerer IFinance
 public class Finance : IFinance
 {
     public int Id {get; set;}
