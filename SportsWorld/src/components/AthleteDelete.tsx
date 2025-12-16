@@ -1,8 +1,8 @@
 import type { IAthlete } from "../interfaces/IAthlete";
 import AthleteService from "../services/AthleteService";
 import { useState, type ReactNode } from "react";
-import { FaTrashAlt } from "react-icons/fa";
 
+//Komponent for å slette athlete
 const AthleteDelete = ({
   athlete,
   onDelete,
@@ -24,12 +24,9 @@ const AthleteDelete = ({
 
   return (
     <div className="w-40">
-
       <button
-        onClick={() => deleteAthlete(athlete.id!)}
-       className="w-full px-4 py-2 !bg-blue-900/50 !text-white border border-blue-700 !rounded-none hover:!bg-blue-800 transition shadow-sm"
-
-
+        onClick={() => deleteAthlete(athlete.id!)} //Legger til ! fordi alle athletes har ID og fjerner advarsel om at ID kan være undefined
+        className="w-full px-4 py-2 !bg-blue-900/50 !text-white border border-blue-700 !rounded-none hover:!bg-blue-800 transition shadow-sm"
       >
         Delete
       </button>

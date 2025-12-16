@@ -1,5 +1,7 @@
 # React .gitignore Template - Updated 2025
 
+#Inspo fra:https://gitignore.pro/react-gitignore
+
 # Dependencies
 node_modules/
 npm-debug.log*
