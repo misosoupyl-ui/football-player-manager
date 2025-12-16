@@ -2,18 +2,18 @@ import { useState } from "react";
 import FinanceService from "../services/FinanceService";
 import type { IFinance } from "../interfaces/IFinance";
 
+
+/* === Håndterer lån ved å øke moneyleft, oppdaterer finance i backend ===*/
 const LoanSection = ({
   onFinanceUpdated,
 }: {
   onFinanceUpdated: (finance: IFinance) => void;
 }) => {
-  // Skjemaverdi
   const [loanAmount, setLoanAmount] = useState("");
-  // Statusmelding til bruker
   const [statusMessage, setStatusMessage] = useState("...waiting for action");
 
+  // Valider input og hente finance, oppdaterer moneyleft
   const addLoan = async () => {
-    // Enkel validering
     if (loanAmount === "") {
       setStatusMessage("Please enter a loan amount.");
       return;
@@ -26,7 +26,7 @@ const LoanSection = ({
       return;
     }
 
-    // Henter finance (1 rad)
+    // Finenace består av en rad, backend er source of truth
     const finance = await FinanceService.getFinance();
 
     if (!finance) {
@@ -34,13 +34,11 @@ const LoanSection = ({
       return;
     }
 
-    // Lager oppdatert objekt
     const updatedFinance: IFinance = {
       ...finance,
       moneyLeft: finance.moneyLeft + amountAsNumber,
     };
-
-    // Oppdaterer i backend
+    
     const result = await FinanceService.putFinance(updatedFinance);
 
     if (result) {

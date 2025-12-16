@@ -39,12 +39,12 @@ const AthleteList = () => {
         <SearchBar />
       </section>
 
-      {/* Edit athlete (kun navn / pris / bilde / gender – IKKE purchase) */}
+      {/* Edit athlete, untatt purchased status */}
       {selectedAthlete && (
         <AthleteEdit
           athlete={selectedAthlete}
           onSave={(updatedAthlete: IAthlete) => {
-            // Oppdater kun athlete-listen (ingen finance!)
+            // Oppdater kun athlete-listen
             setAthletes((prev) =>
               prev.map((a) => (a.id === updatedAthlete.id ? updatedAthlete : a))
             );
@@ -73,9 +73,13 @@ const AthleteList = () => {
             key={athlete.id}
             athlete={athlete}
             onUpdate={handleSelectedAthlete}
-            onDelete={(id: number) =>
-              setAthletes((prev) => prev.filter((a) => a.id !== id))
-            }
+            onDelete={(id: number) =>{
+              setAthletes((prev) => prev.filter((a) => a.id !== id));
+
+              setStatusMessage("Athlete was deleted successfully");
+              setTimeout(() => setStatusMessage(""), 3000);
+
+            }}
           />
         ))}
       </section>

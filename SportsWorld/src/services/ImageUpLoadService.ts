@@ -1,7 +1,8 @@
 import axios from "axios";
 
-
 const endpoint = "http://localhost:5105/api/imageupload";
+
+/*=== Laster opp et bilde til backend ===*/
 
 const uploadImage = async (file: File): Promise<string | null> => {
   try {

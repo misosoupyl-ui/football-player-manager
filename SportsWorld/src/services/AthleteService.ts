@@ -1,16 +1,16 @@
 import type { IAthlete } from "../interfaces/IAthlete";
-
 import axios from "axios";
 
 const athleteEndpoint = "http://localhost:5105/athlete";
 
-//Anbefalt av Rolando i forelesning 20 1:27:20, anbefalte både en try catch og returnere array
+/*=== Service for kommunikasjon med athlete-endepunkt i API-et ===*/
+
+
 const getAllAthletes = async (): Promise<IAthlete[]> => {
   try {
     const response = await axios.get<IAthlete[]>(athleteEndpoint);
     return response.data;
   } catch (error) {
-    // Vi valgte å bruke console.error-> https://dev.to/johongirr/consolelog-consoleerror-consoleassert-and-more-1lf
     console.error("Error:", error);
     return [];
   }

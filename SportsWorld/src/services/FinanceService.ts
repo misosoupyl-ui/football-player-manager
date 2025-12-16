@@ -4,8 +4,8 @@ import axios from "axios";
 const financeEndpoint = "http://localhost:5105/finance";
 
 /*
-  GET /finance
-  Backend returnerer en liste (fordi controlleren din returnerer List<Finance>).
+ Service for kall mot finance API-et
+ API-et returnerer liste, men løsning bruker kun en finance-rad
 */
 const getAllFinance = async (): Promise<IFinance[]> => {
   try {
@@ -17,10 +17,6 @@ const getAllFinance = async (): Promise<IFinance[]> => {
   }
 };
 
-/*
-  GET /finance (men vi bruker kun første rad)
-  Vi har bare 1 rad i tabellen, derfor tar vi [0].
-*/
 const getFinance = async (): Promise<IFinance | null> => {
   try {
     const response = await axios.get<IFinance[]>(financeEndpoint);
@@ -32,10 +28,8 @@ const getFinance = async (): Promise<IFinance | null> => {
 };
 
 /*
-  PUT /finance
-  Backend forventer et HELT Finance-objekt (editedFinance).
-  Viktig: din controller returnerer NoContent() (204), så response.data blir tomt.
-  Derfor returnerer vi updatedFinance tilbake (frontend vet hva den sendte).
+  Oppdaterer ifnance moenyleft ved lån
+  Returnerer objektet backend svarer med (vis api returnerer data)
 */
 const putFinance = async (
   updatedFinance: IFinance

@@ -4,6 +4,13 @@ import FinanceService from "../services/FinanceService";
 import type { IAthlete } from "../interfaces/IAthlete";
 import type { IFinance } from "../interfaces/IFinance";
 
+
+/*UI for purchase og unpurchase kjøp av athletes
+Etter endring hentes finance på nytt,
+ fordi backend beregner moneyleft basert på purchasestatus
+*/
+
+
 const PurchaseSection = ({
   onFinanceUpdated,
 }: {
@@ -54,6 +61,8 @@ const PurchaseSection = ({
     window.setTimeout(() => setStatusMessage(""), 3000);
   };
 
+
+  // Gjenbrukes for både kjøpte og ikke-kjøpte athletes.
   const renderCards = (
     list: IAthlete[],
     statusText: string,

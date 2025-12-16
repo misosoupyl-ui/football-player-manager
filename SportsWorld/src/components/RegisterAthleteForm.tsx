@@ -3,24 +3,25 @@ import AthleteService from "../services/AthleteService";
 import ImageUploadService from "../services/ImageUpLoadService";
 import type { IAthlete } from "../interfaces/IAthlete";
 
+
+
 const RegisterAthleteForm = ({
   onAthleteCreated,
 }: {
   onAthleteCreated: (athlete: IAthlete) => void;
 }) => {
-  // Skjema-state (kontrollerte inputfelter)
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [price, setPrice] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  // Statusmelding til bruker: validering, suksess, feil
+  // Statusmelding til bruker validering, suksess, feil
   const [statusMessage, setStatusMessage] = useState("");
 
   // Brukes for å trigge og resette skjult file-input (custom UI)
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-// === Innsending: valider skjema, håndter eventuell bildeopplasting før lagring ===
+  // ==valider skjema, håndter eventuell bildeopplasting før lagring==
   const handleSubmit = async () => {
     if (!name || !gender || !price) {
       setStatusMessage("You must fill out all fields.");

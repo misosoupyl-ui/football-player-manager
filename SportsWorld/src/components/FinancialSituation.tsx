@@ -1,5 +1,8 @@
 import type { IFinance } from "../interfaces/IFinance";
 
+/* === Oversikt over økonomisk status ===*/
+
+
 const FinancialSituation = ({ finance }: { finance: IFinance }) => {
   return (
     <section className="p-4 bg-white/10 rounded-xl text-white">

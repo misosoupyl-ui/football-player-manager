@@ -3,6 +3,8 @@ import AthleteAdminPage from "../pages/AthleteAdminPage";
 import RegisterAthletePage from "../pages/RegisterAthletePage";
 import DashBoardPage from "../pages/DashBoardPage";
 
+/*=== Hovedrouting for siden===*/
+
 const AppRouting = () => {
   return (
     <BrowserRouter>
@@ -58,14 +60,14 @@ const AppRouting = () => {
       {/* MAIN CONTENT */}
       <main>
         <Routes>
-          {/* ✅ Når du åpner /, send til /athletes */}
+          {/* Når siden åpnes, blir navigert direkte til /athletes*/}
           <Route path="/" element={<Navigate to="/athletes" replace />} />
 
           <Route path="/athletes" element={<AthleteAdminPage />} />
           <Route path="/register" element={<RegisterAthletePage />} />
           <Route path="/dashboard" element={<DashBoardPage />} />
 
-          {/* ✅ Hvis du skriver feil URL, send også til athletes */}
+          {/*feil URL = sendt til /athletes*/}
           <Route path="*" element={<Navigate to="/athletes" replace />} />
         </Routes>
       </main>

@@ -47,7 +47,7 @@ const DashboardPage = () => {
           <div className="mt-6">
             <LoanSection
               onFinanceUpdated={() => {
-                // Etter lån: hent finance på nytt fra backend
+                // Etter lån refetcher vi, fordi backend returnerer oppdatert og begregnet financee
                 fetchFinance();
               }}
             />
