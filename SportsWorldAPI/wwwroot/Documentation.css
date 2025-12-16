@@ -1,0 +1,89 @@
+/*Kode inspo fra: https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_phrase_code_css
+https://www.w3schools.com/cssref/tryit.php?filename=trycss3_box-shadow2
+*/
+
+body {
+  background-image: url("images/AdobeStock_138094550.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+h1 {
+  text-align: center;
+}
+code {
+  color: rgb(226, 43, 80);
+  padding: 2px;
+  font-family: monospace;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  font-size: 106%;
+}
+
+pre {
+  display: block;
+  padding: 8px;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.container {
+  padding: 2px;
+  margin: 40px auto;
+  max-width: fit-content;
+  border-top: 10px;
+  border: 2px solid;
+  box-shadow: 5px 10px 18px #888888;
+  border-radius: 10px;
+  border-color: rgb(100, 77, 100);
+  line-height: 1.6;
+  background-color: rgb(201, 200, 202);
+  padding-bottom: 30px;
+}
+
+table {
+  border-collapse: collapse;
+
+  display: flex;
+  justify-content: center;
+}
+
+th {
+  background-color: #888888;
+}
+
+td,
+th {
+  border: 2px solid black;
+  text-align: left;
+  padding: 8px;
+}
+tr:hover {
+  background-color: rgb(166, 166, 208);
+}
+
+.Response {
+  background-color: rgb(99, 220, 99);
+  padding: 4px;
+  border: 1px solid black;
+  box-shadow: 1px 2px 7px #3eef27;
+  border-left: 20px;
+  display: inline-block;
+  border-radius: 8px;
+}
+
+.Response-error {
+  background-color: rgb(239, 69, 69);
+  padding: 4px;
+  border: 1px solid black;
+  box-shadow: 1px 2px 7px hsl(0, 94%, 59%);
+  border-left: 20px;
+  display: inline-block;
+  border-radius: 8px;
+}
+.method {
+  font-weight: bold;
+  padding: 2px 6px;
+  font-family: monospace;
+  border-radius: 4px;
+}

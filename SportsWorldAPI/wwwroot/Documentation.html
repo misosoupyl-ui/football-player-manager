@@ -1,0 +1,236 @@
+<!--Kode inspo fra : https://www.w3schools.com/tags/tag_code.asp
+https://rickandmortyapi.com/documentation/-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="Documentation.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="h1">SportsWorld API Documentation</h1>
+      <h2>BASE URL for the API:<code> http://localhost:5105/</code></h2>
+      <h3>Url for Athlete:<code> http://localhost:5105/athlete</code></h3>
+
+      <!--Athletes-->
+      <h2>Table: Athletes</h2>
+      <ul>
+        <li><code class="method">GET /Athlete</code> - Returns all athletes</li>
+         <p class="Response">Response 200 OK: </p><pre>
+    <code> [
+  {
+    "id": 1,
+    "name": "Cristiano Ronaldo",
+    "gender": "Male",
+    "price": 100000,
+    "image": "Cristiano_Ronaldo.jpg",
+    "purchaseStatus": false
+  }
+  ,...]</code></pre>
+
+        <li><code class="method">GET /Athlete/{id}</code> - Returns athletes by ID</li>
+         <p>URL Parameter: </p>
+         <p><code>id</code>(int) Athlete ID</p>
+         <p class="Response">Response 200 OK:</p>
+
+
+      <pre><code> {"id": 1,
+    "name": "Cristiano Ronaldo",
+    "gender": "Male",
+    "price": 100000,
+    "image": "Cristiano_Ronaldo.jpg",
+    "purchaseStatus": false
+  }</code></pre>
+
+    <p class="Response-error">Response 404 NOT FOUND: If athlete does not exist</p>
+        
+        <li><code class="method">POST /Athlete</code> - Adds a new athlete</li>
+                
+        <p>Body: </p>
+           <pre><code> {"id": 1,
+    "name": "Cristiano Ronaldo",
+    "gender": "Male",
+    "price": 100000,
+    "image": "Cristiano_Ronaldo.jpg",
+    "purchaseStatus": false
+  }</code></pre>
+    <p class="Response">Response 201 Created: Returns created athlete object</p>
+    
+
+   
+        <li><code class="method">PUT /Athlete</code> - Updates an existing player</li>
+        <p>Body: </p>
+ 
+         <pre><code> {"id": 1,
+    "name": "Cristiano Ronaldo",
+    "gender": "Male",
+    "price": 200000,
+    "image": "Cristiano_Ronaldo2.jpg",
+    "purchaseStatus": false
+  }</code></pre>
+
+    <p class="Response">Response 204: Update was successful</p>
+
+
+
+    
+
+
+        <li><code class="method">DELETE/Athlete/{id}</code> - Deletes an athlete by ID</li>
+        <p class="Response">Reponse 204: Sucessful deletion</p>
+        <p class="Response-error" >Response 404: Athlete does not exist</p>
+      </ul>
+
+      <h1>Athlete Schema</h1>
+      <table>
+        <tr>
+          <th>Key</th>
+          <th>Type</th>
+          <th>Descirption</th>
+        </tr>
+        <tr>
+          <td>Id</td>
+          <td>int</td>
+          <td>The id of the athlete</td>
+        </tr>
+
+        <tr>
+          <td>Name</td>
+          <td>string</td>
+          <td>The name of the athlete</td>
+        </tr>
+
+        <tr>
+          <td>Gender</td>
+          <td>string</td>
+          <td>The gender of the athlete</td>
+        </tr>
+
+        <tr>
+          <td>Price</td>
+          <td>Double</td>
+          <td>The Price of the athlete</td>
+        </tr>
+        <tr>
+          <td>Image</td>
+          <td>string</td>
+          <td>The Image of the athlete</td>
+        </tr>
+
+        <tr>
+          <td>PurchaseStatus</td>
+          <td>bool</td>
+          <td>The Purchase Status of the athlete</td>
+        </tr>
+      </table>
+
+      <h3>Url for Finance: <code>http://localhost:5105/finance</code></h3>
+
+
+
+
+      <!--Finance-->
+      <h2>Table: Finance</h2>
+      <ul>
+        <li>
+          <code class="method">GET /Finance</code> - Returns all finance record (Only one row
+          in our database )
+        </li>
+        <p class="Response">Response 200 OK:</p>
+        <pre><code>[
+  {
+    "id": 1,
+    "moneyLeft": 5000000,
+    "numberOfPurchases": 3,
+    "moneySpent": 300000
+  }
+]
+</code></pre>
+      
+        <li><code>GET /Finance/{id}</code> - Returns athletes by ID</li>
+<p>ID in URL:</p>
+<p><code>ID</code>(int)- Finance ID</p>
+
+<p class="Response">Response 200 OK:</p>
+
+<pre><code>{
+    "id": 1,
+    "moneyLeft": 5000000,
+    "numberOfPurchases": 3,
+    "moneySpent": 300000
+  }</code></pre>
+
+<p class="Response-error">Response 404: Finance record does not exist</p>
+
+
+        <li>
+          <code>POST /Finance</code> - Creates a new finance record (only for
+          demostration of full CRUD)
+
+        <li>
+          <code>PUT /Finance</code> - Updates an existing finance record (For
+          example: MoneyLeft, NumberOfPurchases, MoneySpent)
+        </li>
+        <p>Body:</p>
+        <pre><code>{
+    "id": 1,
+    "moneyLeft": 400000,
+    "numberOfPurchases": 1,
+    "moneySpent": 200000
+  }</code></pre>
+
+        <p class="Response">Response 200 OK: Returns updates finance object</p>
+
+
+
+        <li>
+          <code>DELETE /Finance/{id}</code> - Deletes a finance record by ID
+
+          <p class="Response">
+            Response 204: Successful deletion
+          </p>
+
+          <p class="Response-error">
+            Response 404: Finance record does not exist 
+          </p>
+        </li>
+      </ul>
+
+
+     
+      
+
+      <h1>Finance Schema</h1>
+      <table>
+        <tr>
+          <th>Key</th>
+          <th>Type</th>
+          <th>Descirption</th>
+        </tr>
+        <tr>
+          <td>Id</td>
+          <td>int</td>
+          <td>The id of the Finance row</td>
+        </tr>
+
+        <tr>
+          <td>MoneyLeft</td>
+          <td>Decimal</td>
+          <td>Current balance available for spending</td>
+        </tr>
+
+        <tr>
+          <td>NumberOfPurchases</td>
+          <td>int</td>
+          <td>How many athletes that has been purchased</td>
+        </tr>
+
+          <tr>
+          <td>MoneySpent</td>
+          <td>decimal</td>
+          <td>How much money have been spent</td>
+        </tr>
+    </div>
+  </body>
+</html>
