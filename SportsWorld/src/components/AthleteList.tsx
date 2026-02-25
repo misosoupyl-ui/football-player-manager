@@ -25,7 +25,7 @@ const AthleteList = () => {
   };
 
   return (
-      <>
+    <>
       {/* Overskrift */}
       <header className="mb-4">
         <h3 className="text-2xl font-semibold text-white">Athletes</h3>
@@ -73,12 +73,11 @@ const AthleteList = () => {
             key={athlete.id}
             athlete={athlete}
             onUpdate={handleSelectedAthlete}
-            onDelete={(id: number) =>{
+            onDelete={(id: number) => {
               setAthletes((prev) => prev.filter((a) => a.id !== id));
 
               setStatusMessage("Athlete was deleted successfully");
               setTimeout(() => setStatusMessage(""), 3000);
-
             }}
           />
         ))}

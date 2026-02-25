@@ -5,7 +5,6 @@ import { MdPersonSearch } from "react-icons/md";
 
 //Kode inspirert fra: https://www.kindacode.com/article/how-to-create-a-filter-search-list-in-react
 //https://www.geeksforgeeks.org/reactjs/how-to-build-a-search-filter-using-react-hooks/
-//
 
 const SearchBar = () => {
   //** STATE VARIABLER **//
